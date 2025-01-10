@@ -7,6 +7,18 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 COURSE_FILE = 'course_catalog.json'
 
+sample_input =  {
+    "code": "CS 203",
+    "name": "Software and Tools for AI",
+    "instructor": "Prof. Mayank Singh",
+    "semester": "Fall 2025",
+    "schedule": "Mon, Wed, Fri 10:00-11:00 AM",
+    "classroom": "AB 7/109",
+    "prerequisites": "Basic Python, Linux",
+    "grading": "50% Assignment, 50% Quiz",
+    "description": ""
+}
+
 
 # Utility Functions
 def load_courses():
@@ -44,6 +56,32 @@ def course_details(code):
         flash(f"No course found with code '{code}'.", "error")
         return redirect(url_for('course_catalog'))
     return render_template('course_details.html', course=course)
+
+@app.route('/add_course', methods=['GET', 'POST'])
+def add_course():
+    if request.method == 'POST':
+        
+        if(request.form['code'] == "" or request.form['name'] == "" or request.form['instructor'] == "" or request.form['semester'] == "" or request.form['schedule'] == "" or request.form['classroom'] == "" or request.form['prerequisites'] == "" or request.form['grading'] == ""):
+            flash("Please fill all the fields.", "error")
+            return redirect(url_for('add_course'))
+        
+        data = {
+            'code': request.form['code'],
+            'name': request.form['name'],
+            'description': request.form['description'],
+            'instructor': request.form['instructor'],
+            'credits': request.form['credits'],
+            'semester': request.form['semester'],
+            'classroom': request.form['classroom'],
+            "schedule": request.form['schedule'],
+            "prerequisites": request.form['prerequisites'],
+            "grading": request.form['grading'],
+            "description": request.form['description']
+        }
+        save_courses(data)
+        flash(f"Course '{data['code']}' added successfully.", "success")
+        return redirect(url_for('course_catalog'))
+    return render_template('add_courses.html')   
 
 
 
